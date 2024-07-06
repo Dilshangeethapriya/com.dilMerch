@@ -45,7 +45,6 @@ async function ProductsTable() {
       name: true,
       priceInCents: true,
       isAvailableForPurchase: true,
-      filePath: true,
       _count: { select: { orders: true } },
     },
     orderBy: { name: "asc" },
@@ -97,7 +96,7 @@ async function ProductsTable() {
                 <DropdownMenuContent>
                   <DropdownMenuItem asChild>
                     <a download href={`/products/${product.id}/download`}>
-                      Download Product Info
+                      Download Product Image
                     </a>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
