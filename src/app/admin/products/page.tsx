@@ -24,6 +24,7 @@ import {
   DeleteDropdownItem,
 } from "./_componants/ProductActions";
 
+// admin products page componant
 export default function AdminProductsPage() {
   return (
     <>
@@ -38,6 +39,7 @@ export default function AdminProductsPage() {
   );
 }
 
+// getting product data from data base
 async function ProductsTable() {
   const products = await db.product.findMany({
     select: {
