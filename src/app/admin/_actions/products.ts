@@ -17,24 +17,22 @@ const addSchema = z.object({
 
 
 export async function addProduct(prevState: unknown, formData: FormData){
+    // retriving and validating form data 
     const result = addSchema.safeParse(Object.fromEntries(formData.entries())) ;
     if(result.success === false){
         return result.error.formErrors.fieldErrors;
     }
 
-    console.log(result);
 
     const data = result.data;
 
- 
-
-
+   // saving the product image to file directory
     await fs.mkdir("/public/products", {recursive: true});
     const imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`;
     await fs.writeFile(`public${imagePath}`, Buffer.from(await data.image.arrayBuffer()));
 
     
-
+  // saving product data to the data base
    await db.product.create({ data: {
     isAvailableForPurchase: false,
         name: data.name,
@@ -47,45 +45,45 @@ export async function addProduct(prevState: unknown, formData: FormData){
     redirect("/admin/products");
 }
 
-// const editSchema = addSchema.extend({
-//     image: z.optional(z.any().refine(file => file, "Please upload Image"))
-// })
+const editSchema = addSchema.extend({
+    image: z.optional(z.any().refine(file => file, "Please upload Image"))
+})
 
-// export async function updateProduct(id : string, prevState: unknown, formData: FormData){
-//     const result = editSchema.safeParse(Object.fromEntries(formData.entries())) ;
-//     if(result.success === false){
-//         return result.error.formErrors.fieldErrors;
-//     }
+export async function updateProduct(id : string, prevState: unknown, formData: FormData){
+    const result = editSchema.safeParse(Object.fromEntries(formData.entries())) ;
+    if(result.success === false){
+        return result.error.formErrors.fieldErrors;
+    }
 
     
 
-//     const data = result.data;
-//     const product = await db.product.findUnique({where: {id}})
+    const data = result.data;
+    const product = await db.product.findUnique({where: {id}})
 
-//     if(product == null){
-//         return notFound();
-//     }
+    if(product == null){
+        return notFound();
+    }
 
-//     let imagePath = product.imagePath;
-//     if(data.image != null &&  data.image.size > 0) {
-//         await fs.unlink(product.imagePath);
-//         imagePath = `/public/products/${crypto.randomUUID()}-${data.image.name}`;
-//         await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
-//     }
+    let imagePath = product.imagePath;
+    if(data.image != null &&  data.image.size > 0) {
+        await fs.unlink(`public${product.imagePath}`);
+        imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`;
+        await fs.writeFile(`public${imagePath}`, Buffer.from(await data.image.arrayBuffer()));
+    }
     
 
 
-//    await db.product.update({where: {id},
-//      data: {
-//         name: data.name,
-//         description: data.description,
-//         priceInCents: data.priceInCents,
-//         filePath : imagePath,
-//         imagePath: imagePath
-//     }}) 
+   await db.product.update({where: {id},
+     data: {
+        name: data.name,
+        description: data.description,
+        priceInCents: data.priceInCents,
+        filePath : imagePath,
+        imagePath: imagePath
+    }}) 
 
-//     redirect("/admin/products");
-// }
+    redirect("/admin/products");
+}
 
 
 export async function toggleProductAvailability(id:string, isAvailableForPurchase: boolean){
