@@ -55,6 +55,7 @@ async function ProductsTable() {
   if (products.length === 0) {
     return <p>No products found</p>;
   }
+  //rendering the table
   return (
     <Table>
       <TableHeader>
