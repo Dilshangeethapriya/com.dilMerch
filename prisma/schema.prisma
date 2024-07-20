@@ -49,8 +49,17 @@ model Order {
 
 model DownloadVerification {
   id        String   @id @default(uuid())
-  expiresAt Int
+  expiresAt DateTime
   createdAt DateTime @default(now())
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Stock {
+  productId String @id @default(uuid())
+  xsmall    Int
+  small     Int
+  medium    Int
+  large     Int
+  xLarge    Int
 }
